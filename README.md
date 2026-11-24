@@ -2,6 +2,8 @@
 
 > **Démo non officielle, non affiliée à Jimini.** Projet de candidature réalisé par Jiordi Kengne ([jiordiviera.me](https://jiordiviera.me)).
 
+**Démo en ligne : https://jimini.jiordiviera.me**
+
 Reproduction fonctionnelle du tableau de bord de l'assistant juridique IA [Jimini](https://www.jimini.ai) : l'IA répond vraiment, en streaming, via l'API Anthropic.
 
 ## Fonctionnalités
