@@ -22,10 +22,13 @@ export const RAPIDE_INSTRUCTIONS = `Mode Rapide : va à l'essentiel. Réponse co
 export function citationInstructions(documentCount: number): string {
   const format =
     documentCount > 1
-      ? '[docN:p.X "extrait exact"], où N est le numéro (index) du document et X le numéro de page'
+      ? '[docN:p.X "extrait exact"], où N est l\'index du document (attribut index de la balise <document>) et X le numéro de page'
       : '[doc:p.X "extrait exact"], où X est le numéro de page';
+  const example =
+    documentCount > 1 ? '[doc2:p.3 "le loyer annuel est fixé à"]' : '[doc:p.3 "le loyer annuel est fixé à"]';
   return `Règles de citation des documents joints (obligatoires) :
-- Chaque affirmation tirée d'un document est suivie de sa source au format ${format}.
+- Chaque affirmation tirée d'un document est suivie de sa source au format ${format}. Exemple : ${example}.
+- Écris littéralement « doc »${documentCount > 1 ? " suivi de l'index" : ""}, jamais le nom du fichier.
 - L'extrait est copié mot pour mot depuis la page indiquée (balise <page number="X">) : mêmes mots, même ordre, sans reformulation, sans correction et sans ellipse. Longueur : 6 à 25 mots.
 - Une citation par extrait ; place-la juste après la phrase qu'elle étaie. N'utilise jamais ce format pour autre chose qu'un extrait réel du document.
 - Les citations sont vérifiées automatiquement : un extrait inexact sera signalé comme introuvable.`;

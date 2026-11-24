@@ -9,11 +9,12 @@ import type {
  * (ou [doc2:p.3 "…"] quand plusieurs documents sont joints).
  */
 export const CITATION_PATTERN =
-  /\[doc(\d*)\s*:\s*p\.?\s*(\d+)\s*[,;]?\s*["“«]\s*([^\]]+?)\s*["”»]\s*\]/g;
+  /\[([^\[\]:"“«\n]{1,80}?)\s*:\s*p\.?\s*(\d+)\s*[,;]?\s*["“«]\s*([^\]]+?)\s*["”»]\s*\]/g;
 
 export interface ParsedCitation {
   raw: string;
-  docIndex: number;
+  /** Identifiant écrit par le modèle : « doc », « doc2 » ou le nom du fichier. */
+  docRef: string;
   page: number;
   excerpt: string;
 }
@@ -23,12 +24,25 @@ export function parseCitations(text: string): ParsedCitation[] {
   for (const match of text.matchAll(CITATION_PATTERN)) {
     result.push({
       raw: match[0],
-      docIndex: match[1] ? Number(match[1]) : 1,
+      docRef: match[1].trim(),
       page: Number(match[2]),
       excerpt: match[3].trim(),
     });
   }
   return result;
+}
+
+/** Index (à partir de 1) du document visé, ou 0 s'il est inconnu. */
+export function resolveDocIndex(docRef: string, documents: { name: string }[]): number {
+  const ref = docRef.toLowerCase().replace(/^["'«\s]+|["'»\s]+$/g, "");
+  const numbered = ref.match(/^(?:doc(?:ument)?)\s*(\d*)$/);
+  if (numbered) return numbered[1] ? Number(numbered[1]) : 1;
+  const stripExt = (name: string) => name.toLowerCase().replace(/\.[a-z0-9]+$/, "");
+  const byName = documents.findIndex(
+    (d) => d.name.toLowerCase() === ref || stripExt(d.name) === stripExt(ref),
+  );
+  if (byName !== -1) return byName + 1;
+  return documents.length === 1 ? 1 : 0;
 }
 
 /* ------------------------- Recherche d'extraits ------------------------- */
@@ -108,9 +122,10 @@ export function verifyCitations(
   documents: { name: string; pageTexts: string[] }[],
 ): CitationCheck[] {
   return parseCitations(text).map((citation) => {
-    const doc = documents[citation.docIndex - 1];
+    const docIndex = resolveDocIndex(citation.docRef, documents);
+    const doc = docIndex > 0 ? documents[docIndex - 1] : undefined;
     const base = {
-      docIndex: citation.docIndex,
+      docIndex,
       docName: doc?.name ?? null,
       page: citation.page,
       excerpt: citation.excerpt,
