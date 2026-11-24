@@ -19,7 +19,8 @@ import { FoldersView } from "@/components/views/folders-view";
 import { HistoryView } from "@/components/views/history-view";
 import { HomeView } from "@/components/views/home-view";
 import { useProfileState } from "@/lib/profile";
-import { createFolder, readUiPrefs, writeUiPrefs } from "@/lib/store";
+import { DEMO_CONVERSATION_ID } from "@/lib/seed";
+import { createFolder, readUiPrefs, takeFreshSeed, writeUiPrefs } from "@/lib/store";
 import type { ComposerSubmit, View } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { hashFromView, viewFromHash } from "@/lib/view-hash";
@@ -68,6 +69,13 @@ export function AppShell() {
   const [draft, setDraft] = useState("");
   const [focusSignal, setFocusSignal] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Premier chargement : on ouvre directement la conversation de démo (bail commenté).
+  useEffect(() => {
+    if (takeFreshSeed() && !window.location.hash.replace(/^#\/?/, "")) {
+      window.location.hash = hashFromView({ name: "chat", id: DEMO_CONVERSATION_ID });
+    }
+  }, []);
 
   const navigate = useCallback((next: View) => {
     setMobileOpen(false);

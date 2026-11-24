@@ -1,0 +1,106 @@
+{
+  "question": "Analyse ce bail commercial du point de vue du preneur : identifie les clauses discutables, le risque juridique de chacune et ce que je peux renégocier avant la signature.",
+  "answer": "# Analyse du bail commercial « Le Fournil des Pentes » : point de vue du preneur\n\n## 1. Cadre de l'analyse\n\n**Faits pertinents.** Bail commercial de 9 ans (1er janvier 2025 au 31 décembre 2033), loyer annuel HT/HC de 24 000 €, local de boulangerie-pâtisserie d'environ 85 m² à Lyon 4e. Le document est expressément déclaré fictif (page 1) ; l'analyse est donc menée à titre de démonstration, comme s'il s'agissait d'un projet à négocier.\n\n**Méthode.** Le statut des baux commerciaux (art. L. 145-1 et s. C. com., visés en tête du bail) comporte des dispositions d'ordre public, dont les clauses contraires sont réputées non écrites ou nulles. Pour chaque clause, j'indique le risque, la solidité de la position du preneur et une proposition de renégociation. Les numéros d'articles ne sont donnés que lorsque je suis certain ; sinon, la règle est décrite et la référence est à vérifier.\n\n---\n\n## 2. Tableau de synthèse (par niveau de priorité)\n\n| Priorité | Clause | Problème | Position du preneur |\n|---|---|---|---|\n| 🔴 Haute | Art. 3 : renonciation au congé triennal | Contraire à une règle d'ordre public | Très forte (clause réputée non écrite) |\n| 🔴 Haute | Art. 5 : indexation « à sens unique » | Clause d'échelle mobile écartant la baisse | Forte (risque de nullité de la clause) |\n| 🔴 Haute | Art. 7 : charges et travaux | Transferts exorbitants, contraires à la liste réglementaire | Forte sur plusieurs points |\n| 🔴 Haute | Art. 11 : clause résolutoire | Délai et formalisme à contrôler | Forte |\n| 🟠 Moyenne | Art. 2 : destination | Activités connexes interdites | À négocier |\n| 🟠 Moyenne | Art. 8 : travaux et sort des améliorations | Accession sans indemnité, remise en état | À négocier |\n| 🟠 Moyenne | Art. 9 : cession et sous-location | Restriction excessive, garantie du cédant | Partiellement forte |\n| 🟡 Faible | Art. 6 : dépôt de garantie | Plutôt conforme | Points de détail |\n| 🟡 Faible | Art. 4, 10, 12, 13 | Points de vigilance | Ajustements |\n\n---\n\n## 3. Analyse clause par clause\n\n### Art. 3 : Durée et renonciation au congé triennal 🔴\n\n> « Par dérogation expresse, le Preneur renonce à la faculté de donner congé à l'expiration de chaque période triennale. » [doc:p.1 \"le Preneur renonce à la faculté de donner congé à l'expiration de chaque période triennale\"]\n\n**Analyse.** Le droit du preneur de donner congé à l'issue de chaque période triennale est, en principe, d'ordre public : toute clause l'écartant est en principe réputée non écrite. Il existe des exceptions légales limitées (par exemple certains baux de longue durée, de locaux monovalents, de bureaux, de stationnement, ou les baux de plus de neuf ans), mais aucune ne semble correspondre à un bail de boulangerie de neuf ans. Le bail précise en outre que « Il ne pourra quitter les lieux qu'à l'expiration de la neuvième année, sauf accord exprès du Bailleur » [doc:p.1 \"Il ne pourra quitter les lieux qu'à l'expiration de la neuvième année, sauf accord exprès du Bailleur\"].\n\n**Risque.** Sur le plan juridique, la clause est vraisemblablement inefficace. En pratique, elle crée un risque de contentieux et peut dissuader le preneur d'exercer sa faculté de sortie.\n\n**Négociation.**\n- Supprimer la clause, ou la remplacer par un rappel de la faculté triennale.\n- Fallback : à défaut, conserver le texte mais consigner (courrier ou avenant) la position du preneur sur son caractère non écrit.\n- Rappeler la forme du congé (acte d'huissier/commissaire de justice ou, selon la réforme récente, lettre recommandée) et le préavis de six mois : **point à vérifier** sur la version en vigueur.\n\n### Art. 5 : Indexation « cliquet » 🔴\n\n> « la présente clause ne pourra en aucun cas avoir pour effet de réduire le loyer » [doc:p.2 \"la présente clause ne pourra en aucun cas avoir pour effet de réduire le loyer\"]\n\n**Analyse.** Une clause d'indexation qui exclut la baisse en cas de diminution de l'indice (clause dite « à sens unique » ou « cliquet ») fausse le jeu normal de l'indexation. La jurisprudence en tire la conséquence que la clause est réputée non écrite, soit en totalité, soit selon la position retenue par les juges, pour la seule stipulation prohibitive : **la portée exacte (clause entière ou partie seulement) est à vérifier** dans la jurisprudence récente de la Cour de cassation. Je ne cite aucune décision précise ici.\n\nSecond point : l'indexation est « automatique chaque année à la date anniversaire » et l'indice de référence est celui du T2 2024 [doc:p.2 \"l'indice de référence étant celui du deuxième trimestre 2024\"]. Il faut vérifier que la période de variation est cohérente, c'est-à-dire que l'indice de comparaison est de même trimestre à chaque révision et que la durée entre deux indices n'excède pas la durée de variation prévue. Une distorsion entre la périodicité de la révision et l'intervalle de comparaison est un cas classique de clause réputée non écrite.\n\n**Risque.** Pour le preneur, le risque est une surfacturation du loyer en période de baisse d'indice. Pour les deux parties, une insécurité sur la validité de l'indexation.\n\n**Négociation.**\n- Supprimer la phrase d'exclusion de baisse.\n- Prévoir expressément que l'indexation joue à la hausse comme à la baisse.\n- Vérifier la cohérence indice de référence / trimestre de révision.\n- Négocier éventuellement un plafonnement conventionnel de la hausse annuelle.\n\n### Art. 7 : Charges, impôts et travaux 🔴\n\nC'est la clause la plus déséquilibrée du bail.\n\n> « l'intégralité des charges, taxes et prestations afférentes aux locaux et à l'immeuble, et notamment la taxe foncière, la taxe d'enlèvement des ordures ménagères, les primes d'assurance de l'immeuble et les honoraires de gestion du Bailleur » [doc:p.2 \"la taxe foncière, la taxe d'enlèvement des ordures ménagères, les primes d'assurance de l'immeuble et les honoraires de gestion du Bailleur\"]\n\n> « le coût des grosses réparations visées à l'article 606 du Code civil, ainsi que l'ensemble des travaux de mise en conformité de l'immeuble prescrits par l'administration, quelle qu'en soit la nature » [doc:p.2 \"le coût des grosses réparations visées à l'article 606 du Code civil\"]\n\n**Analyse.**\n- **Grosses réparations (art. 606 C. civ.).** Pour les baux conclus ou renouvelés depuis la loi Pinel, un décret fixe la liste limitative des charges que le bailleur ne peut imputer au preneur, notamment les grosses réparations de l'article 606. La clause est donc **vraisemblablement réputée non écrite** sur ce point, ce que je recommande de confirmer avec la version en vigueur de la partie réglementaire du Code de commerce (numéros d'articles à vérifier).\n- **Mise en conformité « quelle qu'en soit la nature ».** Les travaux de mise en conformité relevant de l'immeuble en général (structure, gros œuvre, sécurité de l'ensemble) sont en principe exclus du transfert, ou doivent être très précisément encadrés. La formule générale est exposée à la même sanction et, au surplus, à la critique du déséquilibre significatif.\n- **Honoraires de gestion du bailleur.** Ils figurent parmi les charges que la liste réglementaire interdit de refacturer. À vérifier précisément dans le texte en vigueur.\n- **Taxe foncière et assurance de l'immeuble.** Leur refacturation est en principe possible, sous réserve d'un détail et d'une justification ; en revanche, la taxe foncière doit être précisément ventilée et les impositions liées à l'intérêt propre du bailleur peuvent être exclues : **à vérifier**.\n- **Inventaire des charges et état récapitulatif.** Le bail annexe « l'inventaire des catégories de charges, impôts, taxes et redevances » [doc:p.3 \"l'inventaire des catégories de charges, impôts, taxes et redevances\"]. Il faut l'examiner : il doit être chiffré/communiqué et cohérent avec l'art. 7. Les obligations d'information (état prévisionnel des travaux sur trois ans, récapitulatif annuel des travaux, répartition par locataire) sont à contrôler et ne figurent pas dans le bail.\n- **Provision.** « Une provision trimestrielle de 900 euros » [doc:p.2 \"Une provision trimestrielle de 900 euros sera versée avec chaque terme de loyer\"] soit 3 600 € par an, sans que le bail détaille les postes auxquels elle correspond. Il faut demander le budget prévisionnel correspondant et un justificatif à la régularisation.\n\n**Risque.** Financier et élevé : charges imprévisibles, risque d'être appelé à financer des travaux structurels de l'immeuble, et alourdissement du « loyer réel » bien au-delà des 24 000 € annoncés.\n\n**Négociation.**\n- Supprimer les grosses réparations de l'article 606 et les honoraires de gestion.\n- Limiter les travaux de mise en conformité à ceux liés à l'activité propre du preneur, à l'exclusion de ceux relevant de la structure ou des parties communes.\n- Plafonner les charges (par poste ou globalement) et exiger un justificatif annuel avec délai de communication.\n- Prévoir une répartition des charges au prorata des surfaces ou tantièmes, mentionnée expressément.\n- Exiger la communication des 3 derniers relevés de charges et de taxes foncières.\n\n### Art. 11 : Clause résolutoire 🔴\n\n> « À défaut de paiement d'un seul terme de loyer ou de charges à son échéance, ou d'inexécution de l'une quelconque des clauses du présent bail, et un mois après un commandement de payer ou une sommation d'exécuter restés sans effet, le bail sera résilié de plein droit » [doc:p.3 \"un mois après un commandement de payer ou une sommation d'exécuter restés sans effet, le bail sera résilié de plein droit\"]\n\n**Analyse.**\n- Le délai d'un mois correspond au minimum légal en matière de baux commerciaux ; il n'est pas critiquable en soi mais doit rester un minimum et mentionner explicitement le délai.\n- La clause doit reproduire ou viser la mention du délai de paiement du commandement ; à défaut, l'acte de commandement est",
+  "verification": {
+    "citations": [
+      {
+        "docIndex": 1,
+        "docName": "bail-commercial-fictif.pdf",
+        "page": 1,
+        "excerpt": "le Preneur renonce à la faculté de donner congé à l'expiration de chaque période triennale",
+        "status": "verified",
+        "foundPage": 1
+      },
+      {
+        "docIndex": 1,
+        "docName": "bail-commercial-fictif.pdf",
+        "page": 1,
+        "excerpt": "Il ne pourra quitter les lieux qu'à l'expiration de la neuvième année, sauf accord exprès du Bailleur",
+        "status": "verified",
+        "foundPage": 1
+      },
+      {
+        "docIndex": 1,
+        "docName": "bail-commercial-fictif.pdf",
+        "page": 2,
+        "excerpt": "la présente clause ne pourra en aucun cas avoir pour effet de réduire le loyer",
+        "status": "verified",
+        "foundPage": 2
+      },
+      {
+        "docIndex": 1,
+        "docName": "bail-commercial-fictif.pdf",
+        "page": 2,
+        "excerpt": "l'indice de référence étant celui du deuxième trimestre 2024",
+        "status": "verified",
+        "foundPage": 2
+      },
+      {
+        "docIndex": 1,
+        "docName": "bail-commercial-fictif.pdf",
+        "page": 2,
+        "excerpt": "la taxe foncière, la taxe d'enlèvement des ordures ménagères, les primes d'assurance de l'immeuble et les honoraires de gestion du Bailleur",
+        "status": "verified",
+        "foundPage": 2
+      },
+      {
+        "docIndex": 1,
+        "docName": "bail-commercial-fictif.pdf",
+        "page": 2,
+        "excerpt": "le coût des grosses réparations visées à l'article 606 du Code civil",
+        "status": "verified",
+        "foundPage": 2
+      },
+      {
+        "docIndex": 1,
+        "docName": "bail-commercial-fictif.pdf",
+        "page": 3,
+        "excerpt": "l'inventaire des catégories de charges, impôts, taxes et redevances",
+        "status": "verified",
+        "foundPage": 3
+      },
+      {
+        "docIndex": 1,
+        "docName": "bail-commercial-fictif.pdf",
+        "page": 2,
+        "excerpt": "Une provision trimestrielle de 900 euros sera versée avec chaque terme de loyer",
+        "status": "verified",
+        "foundPage": 2
+      },
+      {
+        "docIndex": 1,
+        "docName": "bail-commercial-fictif.pdf",
+        "page": 3,
+        "excerpt": "un mois après un commandement de payer ou une sommation d'exécuter restés sans effet, le bail sera résilié de plein droit",
+        "status": "verified",
+        "foundPage": 3
+      }
+    ],
+    "legalRefs": [
+      {
+        "key": "Code de commerce|L. 145-1",
+        "label": "Art. L. 145-1 Code de commerce",
+        "article": "L. 145-1",
+        "code": "Code de commerce",
+        "complete": true,
+        "url": "https://www.legifrance.gouv.fr/search/all?tab_selection=all&searchField=ALL&query=article%20L145-1%20Code%20de%20commerce&page=1&init=true"
+      },
+      {
+        "key": "Code civil|606",
+        "label": "Art. 606 Code civil",
+        "article": "606",
+        "code": "Code civil",
+        "complete": true,
+        "url": "https://www.legifrance.gouv.fr/search/all?tab_selection=all&searchField=ALL&query=article%20606%20Code%20civil&page=1&init=true"
+      },
+      {
+        "key": "loi-nommee|pinel",
+        "label": "Loi Pinel",
+        "article": null,
+        "code": null,
+        "complete": false,
+        "url": "https://www.legifrance.gouv.fr/search/all?tab_selection=all&searchField=ALL&query=Loi%20Pinel&page=1&init=true"
+      }
+    ]
+  }
+}

@@ -1,6 +1,11 @@
-import type { AppState, Conversation, Folder } from "@/lib/types";
+import demoConversation from "@/lib/demo-conversation.json";
+import demoLease from "@/lib/demo-lease.json";
+import type { AnswerVerification, AppState, Conversation, Folder } from "@/lib/types";
 
-export const STATE_VERSION = 2;
+export const STATE_VERSION = 3;
+
+/** Conversation ouverte au premier chargement. */
+export const DEMO_CONVERSATION_ID = "c_demo_bail";
 
 const DAY = 86_400_000;
 
@@ -73,10 +78,53 @@ function conv(
   };
 }
 
+function createDemoConversation(now: number): Conversation {
+  const asked = now - 5 * 60_000;
+  return {
+    id: DEMO_CONVERSATION_ID,
+    title: "Analyse du bail commercial – Le Fournil des Pentes",
+    kind: "analysis",
+    folderId: null,
+    members: ["JK", "AR"],
+    mode: "reflexion",
+    sources: true,
+    createdAt: asked,
+    updatedAt: asked + 40_000,
+    documents: [
+      {
+        id: "d_demo_lease",
+        name: demoLease.name,
+        text: demoLease.pageTexts.join("\n\n"),
+        pageTexts: demoLease.pageTexts,
+        pages: demoLease.pages,
+        size: demoLease.size,
+        url: "/demo/bail-commercial-fictif.pdf",
+      },
+    ],
+    messages: [
+      {
+        id: "m_demo_1",
+        role: "user",
+        content: demoConversation.question,
+        createdAt: asked,
+        attachments: [{ name: demoLease.name, pages: demoLease.pages }],
+      },
+      {
+        id: "m_demo_2",
+        role: "assistant",
+        content: demoConversation.answer,
+        createdAt: asked + 40_000,
+        verification: demoConversation.verification as AnswerVerification,
+      },
+    ],
+  };
+}
+
 export function createSeedConversations(now = Date.now()): Conversation[] {
   const today = now - 2 * 3_600_000;
   const yesterday = now - DAY;
   return [
+    createDemoConversation(now),
     conv({
       id: "c_refere",
       title:
