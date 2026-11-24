@@ -117,6 +117,42 @@ export function findExcerpt(haystack: string, excerpt: string): [number, number]
   return [map[start], map[end - 1] + 1];
 }
 
+export interface ExcerptLocation {
+  page: number;
+  range: [number, number];
+}
+
+/**
+ * Localise un extrait dans un document paginé : d'abord sur la page indiquée,
+ * puis sur les autres pages, puis à cheval sur deux pages consécutives.
+ */
+export function locateExcerpt(
+  pageTexts: string[],
+  excerpt: string,
+  hintPage: number,
+): ExcerptLocation[] | null {
+  const order = [hintPage - 1, ...pageTexts.map((_, i) => i).filter((i) => i !== hintPage - 1)];
+  for (const index of order) {
+    const page = pageTexts[index];
+    if (page === undefined) continue;
+    const range = findExcerpt(page, excerpt);
+    if (range) return [{ page: index + 1, range }];
+  }
+  for (let i = 0; i < pageTexts.length - 1; i++) {
+    const first = pageTexts[i];
+    const joined = `${first}\n${pageTexts[i + 1]}`;
+    const range = findExcerpt(joined, excerpt);
+    if (!range) continue;
+    const split = first.length + 1;
+    if (range[0] >= split || range[1] <= first.length) continue; // déjà testé page par page
+    return [
+      { page: i + 1, range: [range[0], first.length] },
+      { page: i + 2, range: [0, range[1] - split] },
+    ];
+  }
+  return null;
+}
+
 export function verifyCitations(
   text: string,
   documents: { name: string; pageTexts: string[] }[],
@@ -131,13 +167,39 @@ export function verifyCitations(
       excerpt: citation.excerpt,
     };
     if (!doc) return { ...base, status: "not-found", foundPage: null };
-    const stated = doc.pageTexts[citation.page - 1];
-    if (stated !== undefined && findExcerpt(stated, citation.excerpt)) {
-      return { ...base, status: "verified", foundPage: citation.page };
-    }
-    const other = doc.pageTexts.findIndex((page) => findExcerpt(page, citation.excerpt));
-    if (other !== -1) return { ...base, status: "other-page", foundPage: other + 1 };
-    return { ...base, status: "not-found", foundPage: null };
+    const location = locateExcerpt(doc.pageTexts, citation.excerpt, citation.page);
+    if (!location) return { ...base, status: "not-found", foundPage: null };
+    const pages = location.map((l) => l.page);
+    return pages.includes(citation.page)
+      ? { ...base, status: "verified", foundPage: citation.page }
+      : { ...base, status: "other-page", foundPage: pages[0] };
+  });
+}
+
+/**
+ * Retire les lignes répétées en tête ou en pied de chaque page (pieds de page
+ * « page 2/3 », en-têtes de cabinet…), qui couperaient les phrases à cheval sur deux pages.
+ */
+export function stripRunningLines(pageTexts: string[]): string[] {
+  if (pageTexts.length < 2) return pageTexts;
+  const signature = (line: string) => line.trim().toLowerCase().replace(/\d+/g, "#");
+  const edgeLines = pageTexts.map((page) => {
+    const lines = page.split("\n").filter((l) => l.trim());
+    return [...new Set([lines[0], lines[lines.length - 1]].filter(Boolean).map(signature))];
+  });
+  const counts = new Map<string, number>();
+  edgeLines.flat().forEach((sig) => counts.set(sig, (counts.get(sig) ?? 0) + 1));
+  const threshold = Math.max(2, Math.ceil(pageTexts.length * 0.6));
+  const running = new Set(
+    [...counts].filter(([sig, n]) => n >= threshold && sig.length > 3).map(([sig]) => sig),
+  );
+  if (running.size === 0) return pageTexts;
+  return pageTexts.map((page) => {
+    const lines = page.split("\n");
+    while (lines.length && (!lines[0].trim() || running.has(signature(lines[0])))) lines.shift();
+    while (lines.length && (!lines[lines.length - 1].trim() || running.has(signature(lines[lines.length - 1]))))
+      lines.pop();
+    return lines.join("\n");
   });
 }
 

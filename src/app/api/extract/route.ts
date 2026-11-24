@@ -1,4 +1,5 @@
 import { extractText, getDocumentProxy } from "unpdf";
+import { stripRunningLines } from "@/lib/citations";
 import {
   ACCEPTED_EXTENSIONS,
   MAX_FILE_BYTES,
@@ -52,7 +53,7 @@ async function extractFile(file: File): Promise<ExtractedFile> {
   let budget = MAX_TEXT_CHARS;
   const pageTexts: string[] = [];
   let truncated = false;
-  for (const page of rawPages.map(clean)) {
+  for (const page of stripRunningLines(rawPages.map(clean))) {
     if (budget <= 0) {
       truncated = true;
       break;

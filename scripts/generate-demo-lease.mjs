@@ -1,10 +1,11 @@
 // Génère le bail commercial fictif de la démo (public/demo/bail-commercial-fictif.pdf)
 // puis en extrait le texte page par page avec unpdf (src/lib/demo-lease.json),
 // pour que la conversation de démo utilise exactement le texte que lirait l'app.
-// Usage : node scripts/generate-demo-lease.mjs
+// Usage : node --experimental-strip-types scripts/generate-demo-lease.mjs
 import { writeFileSync } from "node:fs";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import { extractText, getDocumentProxy } from "unpdf";
+import { stripRunningLines } from "../src/lib/citations.ts";
 
 const TITLE = "BAIL COMMERCIAL";
 const SUBTITLE = "Soumis aux articles L. 145-1 et suivants du Code de commerce";
@@ -189,11 +190,14 @@ writeFileSync("public/demo/bail-commercial-fictif.pdf", bytes);
 
 const proxy = await getDocumentProxy(new Uint8Array(bytes));
 const { totalPages, text } = await extractText(proxy, { mergePages: false });
-const cleaned = text.map((t) =>
-  t
-    .replace(/[ \t]+\n/g, "\n")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim(),
+const cleaned = stripRunningLines(
+  text.map((t) =>
+    t
+      .replace(/\u0000/g, "")
+      .replace(/[ \t]+\n/g, "\n")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim(),
+  ),
 );
 writeFileSync(
   "src/lib/demo-lease.json",

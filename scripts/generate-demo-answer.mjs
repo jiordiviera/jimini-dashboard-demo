@@ -9,7 +9,7 @@ const ERROR = "\u0000__JIMINI_ERROR__:";
 
 const lease = JSON.parse(readFileSync("src/lib/demo-lease.json", "utf8"));
 const question =
-  "Analyse ce bail commercial du point de vue du preneur : identifie les clauses discutables, le risque juridique de chacune et ce que je peux renégocier avant la signature.";
+  "Analyse ce bail commercial du point de vue du preneur : identifie les clauses discutables, le risque juridique de chacune et ce que je peux renégocier avant la signature. Sois synthétique : 900 mots maximum, une section courte par clause.";
 
 const res = await fetch(`${BASE}/api/chat`, {
   method: "POST",
@@ -27,6 +27,13 @@ if (raw.includes(ERROR)) throw new Error(raw.slice(raw.indexOf(ERROR)));
 const metaIndex = raw.indexOf(META);
 if (metaIndex === -1) throw new Error("Vérification absente de la réponse");
 const answer = raw.slice(0, metaIndex);
+// La réponse stockée doit être complète : pas de coupure, points à vérifier et sources en fin.
+if (answer.includes("Réponse interrompue")) throw new Error("Réponse tronquée (max_tokens) : relancez.");
+const tail = answer.slice(-2500);
+if (!/points à vérifier/i.test(answer) || !/#+\s*sources|\*\*sources\*\*/i.test(tail)) {
+  writeFileSync("/tmp/demo-answer-rejected.md", answer);
+  throw new Error("Réponse incomplète (points à vérifier ou sources manquants), voir /tmp/demo-answer-rejected.md");
+}
 const verification = JSON.parse(raw.slice(metaIndex + META.length));
 
 writeFileSync(

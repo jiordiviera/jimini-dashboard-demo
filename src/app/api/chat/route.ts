@@ -183,6 +183,7 @@ export async function POST(req: Request): Promise<Response> {
   const encoder = new TextEncoder();
   const documents = body.documents;
   let fullText = "";
+  let stopReason: string | null = null;
   const readable = new ReadableStream<Uint8Array>({
     async start(controller) {
       const push = (event: MessageStreamEvent) => {
@@ -192,6 +193,8 @@ export async function POST(req: Request): Promise<Response> {
         ) {
           fullText += event.delta.text;
           controller.enqueue(encoder.encode(event.delta.text));
+        } else if (event.type === "message_delta") {
+          stopReason = event.delta.stop_reason ?? stopReason;
         }
       };
       try {
@@ -200,6 +203,12 @@ export async function POST(req: Request): Promise<Response> {
           const next = await iterator.next();
           if (next.done) break;
           push(next.value);
+        }
+        if (stopReason === "max_tokens") {
+          const note =
+            "\n\n> ⚠️ Réponse interrompue : limite de longueur atteinte. Demandez « continue » pour obtenir la suite.";
+          fullText += note;
+          controller.enqueue(encoder.encode(note));
         }
         // Vérification côté serveur : chaque extrait cité existe-t-il vraiment
         // à la page indiquée ? Quelles références légales sont citées ?

@@ -8,7 +8,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useEffect, useRef } from "react";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
-import { findExcerpt } from "@/lib/citations";
+import { locateExcerpt } from "@/lib/citations";
 import type { ChatDocument, CitationCheck } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -19,16 +19,24 @@ interface DocumentPanelProps {
   citation: CitationCheck | null;
 }
 
-function PageText({ text, range }: { text: string; range: [number, number] | null }) {
+function PageText({
+  text,
+  range,
+  scrollTo,
+}: {
+  text: string;
+  range: [number, number] | null;
+  scrollTo: boolean;
+}) {
   const markRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    if (!range) return;
+    if (!range || !scrollTo) return;
     const id = window.setTimeout(() => {
       markRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
     }, 250);
     return () => window.clearTimeout(id);
-  }, [range]);
+  }, [range, scrollTo]);
 
   if (!range) return <>{text}</>;
   return (
@@ -51,12 +59,12 @@ export function DocumentPanel({ open, onOpenChange, document, citation }: Docume
       ? document.pageTexts
       : [document.text]
     : [];
-  const targetPage =
-    citation && citation.status !== "not-found" ? (citation.foundPage ?? citation.page) : null;
-  const range =
-    citation && targetPage && pages[targetPage - 1] !== undefined
-      ? findExcerpt(pages[targetPage - 1], citation.excerpt)
-      : null;
+  const locations =
+    citation && citation.status !== "not-found"
+      ? (locateExcerpt(pages, citation.excerpt, citation.foundPage ?? citation.page) ?? [])
+      : [];
+  const rangeFor = (page: number) => locations.find((l) => l.page === page)?.range ?? null;
+  const firstPage = locations[0]?.page ?? null;
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -101,7 +109,9 @@ export function DocumentPanel({ open, onOpenChange, document, citation }: Docume
               )}
               <span>
                 {citation.status === "verified" &&
-                  `Extrait vérifié mot pour mot, page ${citation.page}.`}
+                  (locations.length > 1
+                    ? `Extrait vérifié mot pour mot, à cheval sur les pages ${locations[0].page} et ${locations[1].page}.`
+                    : `Extrait vérifié mot pour mot, page ${citation.page}.`)}
                 {citation.status === "other-page" &&
                   `Extrait vérifié, mais page ${citation.foundPage} (le modèle indiquait la page ${citation.page}).`}
                 {citation.status === "not-found" && (
@@ -122,14 +132,18 @@ export function DocumentPanel({ open, onOpenChange, document, citation }: Docume
                 aria-label={`Page ${index + 1}`}
                 className={cn(
                   "rounded-xl border bg-white px-5 py-4",
-                  targetPage === index + 1 ? "border-jm-focus-border" : "border-jm-border",
+                  rangeFor(index + 1) ? "border-jm-focus-border" : "border-jm-border",
                 )}
               >
                 <p className="mb-2 text-[11px] font-semibold tracking-[0.08em] text-jm-subtle uppercase">
                   Page {index + 1}
                 </p>
                 <p className="font-serif text-[14px] leading-relaxed whitespace-pre-wrap text-jm-ink-2">
-                  <PageText text={text} range={targetPage === index + 1 ? range : null} />
+                  <PageText
+                    text={text}
+                    range={rangeFor(index + 1)}
+                    scrollTo={firstPage === index + 1}
+                  />
                 </p>
               </section>
             ))}
