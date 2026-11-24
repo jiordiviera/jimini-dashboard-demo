@@ -5,6 +5,7 @@ import { Composer } from "@/components/composer";
 import { FoldersSection } from "@/components/folders-section";
 import { PromptChips } from "@/components/prompt-chips";
 import { RecentList } from "@/components/recent-list";
+import { useProfile } from "@/lib/profile";
 import { useConversations } from "@/lib/store";
 import type { ComposerSubmit } from "@/lib/types";
 
@@ -34,6 +35,7 @@ export function HomeView({
   onShowHistory,
 }: HomeViewProps) {
   const conversations = useConversations();
+  const profile = useProfile();
   const recents = [...conversations]
     .sort((a, b) => b.updatedAt - a.updatedAt)
     .slice(0, 6);
@@ -41,7 +43,7 @@ export function HomeView({
   return (
     <div className="mx-auto w-full max-w-[940px] px-4 pb-10 sm:px-8">
       <h1 className="pt-6 text-center font-serif text-[32px] leading-[1.18] font-normal tracking-[-0.01em] text-jm-ink sm:pt-12 sm:text-[42px]">
-        Bonjour Jiordi,
+        Bonjour {profile.firstName || "Jiordi"},
         <br />
         Comment puis-je vous aider ?
       </h1>

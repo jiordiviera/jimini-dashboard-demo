@@ -7,6 +7,7 @@ import { useChatRunner } from "@/components/chat-runner-provider";
 import { ChatView } from "@/components/chat-view";
 import { FooterNote } from "@/components/footer-note";
 import { InfoDialog } from "@/components/info-dialog";
+import { OnboardingDialog } from "@/components/onboarding-dialog";
 import { JiminiLogo } from "@/components/jimini-logo";
 import { Sidebar, type InfoKind } from "@/components/sidebar";
 import { TextPromptDialog } from "@/components/text-prompt-dialog";
@@ -17,6 +18,7 @@ import { FolderView } from "@/components/views/folder-view";
 import { FoldersView } from "@/components/views/folders-view";
 import { HistoryView } from "@/components/views/history-view";
 import { HomeView } from "@/components/views/home-view";
+import { useProfileState } from "@/lib/profile";
 import { createFolder, readUiPrefs, writeUiPrefs } from "@/lib/store";
 import type { ComposerSubmit, View } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -58,6 +60,7 @@ export function AppShell() {
   const hash = useSyncExternalStore(subscribeHash, getHash, getServerHash);
   const view = viewFromHash(hash);
   const { send } = useChatRunner();
+  const profileState = useProfileState();
   const [collapsed, toggleCollapsed] = useCollapsedPref();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [creatingFolder, setCreatingFolder] = useState(false);
@@ -213,6 +216,7 @@ export function AppShell() {
           navigate({ name: "folder", id: folder.id });
         }}
       />
+      <OnboardingDialog open={profileState === null} />
       <InfoDialog kind={info} onOpenChange={(open) => !open && setInfo(null)} />
     </div>
   );

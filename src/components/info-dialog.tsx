@@ -11,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { resetProfile } from "@/lib/profile";
 import { resetDemo } from "@/lib/store";
 
 interface InfoDialogProps {
@@ -96,6 +97,24 @@ export function InfoDialog({ kind, onOpenChange }: InfoDialogProps) {
                 }}
               >
                 <ArrowPathIcon /> Réinitialiser
+              </Button>
+            </div>
+            <div className="flex items-center justify-between gap-4 rounded-xl border border-jm-border p-4">
+              <div>
+                <p className="text-[14px] font-medium text-jm-ink">Revoir l&apos;onboarding</p>
+                <p className="text-[13px] text-jm-muted">
+                  Rouvre le formulaire de bienvenue et réinitialise votre profil.
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                className="shrink-0 rounded-xl"
+                onClick={() => {
+                  onOpenChange(false);
+                  resetProfile();
+                }}
+              >
+                Rouvrir
               </Button>
             </div>
           </>
