@@ -19,11 +19,15 @@ import {
 import { FolderIcon as FolderSolid } from "@heroicons/react/24/solid";
 import type { ComponentType, SVGProps } from "react";
 import { toast } from "sonner";
+import { MicrosoftOutlookIcon } from "@/components/brand-icons/microsoft-outlook";
+import { MicrosoftWordIcon } from "@/components/brand-icons/microsoft-word";
 import { JiminiLogo } from "@/components/jimini-logo";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { USER_AVATAR_URL } from "@/lib/people";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { displayName, initialsOf, useProfile } from "@/lib/profile";
 import { useFolders } from "@/lib/store";
 import type { FeatureKey, View } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -162,6 +166,7 @@ export function Sidebar({
   className,
 }: SidebarProps) {
   const folders = useFolders();
+  const profile = useProfile();
 
   const footerIcons: { label: string; icon: Icon; kind: InfoKind }[] = [
     { label: "Paramètres", icon: Cog6ToothIcon, kind: "settings" },
@@ -314,8 +319,8 @@ export function Sidebar({
               </p>
               <div className="mt-3 flex flex-col gap-1">
                 {[
-                  { label: "Jimini pour Word", letter: "W", tone: "bg-jm-word" },
-                  { label: "Jimini pour Outlook", letter: "O", tone: "bg-jm-outlook" },
+                  { label: "Jimini pour Word", Logo: MicrosoftWordIcon },
+                  { label: "Jimini pour Outlook", Logo: MicrosoftOutlookIcon },
                 ].map((ext) => (
                   <button
                     key={ext.label}
@@ -325,14 +330,7 @@ export function Sidebar({
                     }
                     className="flex h-8 items-center gap-2 rounded-lg px-1.5 text-[12.5px] font-medium text-jm-ink-2 transition-colors hover:bg-jm-sidebar"
                   >
-                    <span
-                      className={cn(
-                        "inline-flex size-5 items-center justify-center rounded-[5px] text-[10px] font-bold text-white",
-                        ext.tone,
-                      )}
-                    >
-                      {ext.letter}
-                    </span>
+                    <ext.Logo className="size-5" />
                     <span className="flex-1 text-left">{ext.label}</span>
                     <PlusIcon className="size-4 stroke-2 text-jm-muted" />
                   </button>
@@ -351,12 +349,15 @@ export function Sidebar({
       >
         <div className="flex min-w-0 items-center gap-2.5 pl-1">
           <Avatar className="size-8 after:hidden">
+            <AvatarImage src={USER_AVATAR_URL} alt={displayName(profile)} />
             <AvatarFallback className="bg-jm-blue text-[12px] font-semibold text-white">
-              JK
+              {initialsOf(profile)}
             </AvatarFallback>
           </Avatar>
           {!collapsed && (
-            <span className="truncate text-[13.5px] font-medium text-jm-ink">Jiordi Kengne</span>
+            <span className="truncate text-[13.5px] font-medium text-jm-ink">
+              {displayName(profile)}
+            </span>
           )}
         </div>
         {!collapsed && (

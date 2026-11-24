@@ -1,4 +1,5 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { avatarFor, nameFor } from "@/lib/people";
 import { cn } from "@/lib/utils";
 
 const PALETTE = [
@@ -40,6 +41,7 @@ export function AvatarStack({
           key={`${item}-${index}`}
           className={cn(dim, "ring-2 after:hidden", ringClassName, index > 0 && "-ml-1.5")}
         >
+          <AvatarImage src={avatarFor(item)} alt={nameFor(item)} title={nameFor(item)} />
           <AvatarFallback className={cn("font-semibold", colorFor(item))}>
             {item}
           </AvatarFallback>
