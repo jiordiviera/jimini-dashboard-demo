@@ -8,6 +8,9 @@ Reproduction fonctionnelle du tableau de bord de l'assistant juridique IA [Jimin
 
 ## Fonctionnalités
 
+- Conversation de démo préchargée : un bail commercial fictif (`public/demo/bail-commercial-fictif.pdf`) analysé par l'IA
+- **Citations vérifiables** : le modèle cite au format `[doc:p.X "extrait exact"]` ; le serveur vérifie que chaque extrait existe à la page indiquée (pastille, panneau latéral avec surlignage, badge rouge « extrait introuvable »)
+- Références légales détectées (lien de recherche Légifrance, badge « à vérifier » si incomplètes) et compteur sous chaque réponse
 - Chat IA en streaming (Markdown, Stop, Copier, Régénérer), contexte des 20 derniers messages
 - Modes **Rapide** et **Réflexion**, option **Sources** (textes de loi cités en fin de réponse)
 - Pièces jointes PDF, TXT, MD et CSV (glisser-déposer, 5 fichiers de 8 Mo) injectées dans des balises `<document>`
@@ -35,6 +38,8 @@ pnpm dev
 | `ANTHROPIC_API_KEY` | Obligatoire, utilisée uniquement côté serveur |
 | `ANTHROPIC_MODEL` | Optionnelle, `claude-sonnet-5-5` par défaut |
 
+Régénérer la démo : `node scripts/generate-demo-lease.mjs` (PDF + texte par page), puis, serveur lancé, `node scripts/generate-demo-answer.mjs`.
+
 ## Structure
 
 ```
@@ -42,7 +47,8 @@ src/app/api/chat       Route de streaming (Anthropic)
 src/app/api/extract    Extraction de texte des pièces jointes
 src/components         Sidebar, composer, cartes dossiers, chat…
 src/components/views   Accueil, dossier(s), historique, pages fonctionnalités
-src/lib                Store localStorage, prompts, types, données de départ
+src/lib                Store localStorage, prompts, vérification des citations, données de départ
+src/app/comment-je-l-ai-construit   Notes d'architecture et limites
 ```
 
 Le logo et le favicon appartiennent à Jimini et ne sont utilisés ici qu'à titre de démonstration.
