@@ -337,6 +337,15 @@ export function OnboardingDialog({ open }: { open: boolean }) {
 
         <div className="grid grid-cols-[1fr_auto_1fr] items-center px-5 py-3.5">
           <div>
+            {step === 0 && (
+              <button
+                type="button"
+                onClick={() => saveProfile({ ...DEFAULT_PROFILE, completedAt: Date.now() })}
+                className="inline-flex h-8 items-center rounded-full px-3 text-[12.5px] font-medium text-jm-muted underline-offset-2 hover:text-jm-ink hover:underline"
+              >
+                Passer
+              </button>
+            )}
             {step === 1 && (
               <button
                 type="button"
