@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 export function FooterNote({ className }: { className?: string }) {
@@ -11,7 +12,14 @@ export function FooterNote({ className }: { className?: string }) {
         className="underline-offset-2 hover:text-jm-muted hover:underline"
       >
         jiordiviera.me
-      </a>
+      </a>{" "}
+      ·{" "}
+      <Link
+        href="/comment-je-l-ai-construit"
+        className="underline-offset-2 hover:text-jm-muted hover:underline"
+      >
+        Comment je l&apos;ai construit
+      </Link>
     </p>
   );
 }
