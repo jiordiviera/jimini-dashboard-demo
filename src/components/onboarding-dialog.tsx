@@ -1,10 +1,14 @@
 "use client";
 
-import { ArrowLeftIcon, ArrowRightIcon, CheckIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  CheckIcon,
+  InformationCircleIcon,
+} from "@heroicons/react/24/outline";
 import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { JiminiLogo } from "@/components/jimini-logo";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import {
   Select,
@@ -117,13 +121,19 @@ function ChoiceSelect({
 
 export function OnboardingDialog({ open }: { open: boolean }) {
   const [step, setStep] = useState<0 | 1>(0);
+  // Valeurs d'exemple : l'écran reste démonstratif, rien n'est envoyé.
   const [form, setForm] = useState<UserProfile>({
     ...DEFAULT_PROFILE,
-    firstName: "",
-    lastName: "",
+    firstName: "Jiordi",
+    lastName: "Kengne",
+    orgType: "Cabinet d'avocats",
+    orgName: "Cabinet Exemple Avocats",
+    role: "Collaborateur / collaboratrice",
+    phone: "6 12 34 56 78",
+    source: "LinkedIn",
+    practiceAreas: ["Droit des affaires", "Contentieux"],
   });
   const [country, setCountry] = useState(COUNTRIES[0].code);
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const set = <K extends keyof UserProfile>(key: K, value: UserProfile[K]) =>
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -132,8 +142,7 @@ export function OnboardingDialog({ open }: { open: boolean }) {
     form.firstName.trim() !== "" &&
     form.lastName.trim() !== "" &&
     form.orgType !== "" &&
-    form.role !== "" &&
-    acceptedTerms;
+    form.role !== "";
 
   const toggleArea = (area: string) =>
     set(
@@ -259,33 +268,6 @@ export function OnboardingDialog({ open }: { open: boolean }) {
                   onChange={(v) => set("source", v)}
                 />
               </Field>
-              <label className="mt-1 flex items-center gap-2.5 text-[12.5px] text-jm-ink">
-                <Checkbox
-                  checked={acceptedTerms}
-                  onCheckedChange={(checked) => setAcceptedTerms(checked === true)}
-                />
-                <span>
-                  J&apos;ai lu et j&apos;accepte les{" "}
-                  <a
-                    href="https://www.jimini.ai"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-jm-blue underline underline-offset-2"
-                  >
-                    CGU
-                  </a>{" "}
-                  et la{" "}
-                  <a
-                    href="https://www.jimini.ai"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-jm-blue underline underline-offset-2"
-                  >
-                    politique de confidentialité
-                  </a>
-                  .
-                </span>
-              </label>
             </div>
           ) : (
             <div className="mt-6 flex flex-wrap justify-center gap-2">
@@ -313,27 +295,10 @@ export function OnboardingDialog({ open }: { open: boolean }) {
           )}
         </div>
 
-        {step === 0 && (
-          <label className="flex items-start gap-2.5 bg-jm-sidebar px-6 py-3 text-[11px] leading-snug text-jm-ink-3 sm:px-5">
-            <Checkbox
-              className="mt-0.5"
-              checked={form.emailTracking}
-              onCheckedChange={(checked) => set("emailTracking", checked === true)}
-            />
-            <span>
-              J&apos;accepte que Jimini mesure l&apos;ouverture et les clics de ses emails pour
-              personnaliser ses contenus et la fréquence de ses envois.{" "}
-              <a
-                href="https://www.jimini.ai"
-                target="_blank"
-                rel="noreferrer"
-                className="text-jm-blue underline underline-offset-2"
-              >
-                En savoir plus
-              </a>
-            </span>
-          </label>
-        )}
+        <p className="flex items-center justify-center gap-1.5 bg-jm-sidebar px-6 py-2.5 text-center text-[11.5px] text-jm-ink-3">
+          <InformationCircleIcon className="size-4 shrink-0 text-jm-muted" />
+          Écran d&apos;onboarding reproduit, aucune donnée n&apos;est envoyée.
+        </p>
 
         <div className="grid grid-cols-[1fr_auto_1fr] items-center px-5 py-3.5">
           <div>
@@ -341,7 +306,7 @@ export function OnboardingDialog({ open }: { open: boolean }) {
               <button
                 type="button"
                 onClick={() => saveProfile({ ...DEFAULT_PROFILE, completedAt: Date.now() })}
-                className="inline-flex h-8 items-center rounded-full px-3 text-[12.5px] font-medium text-jm-muted underline-offset-2 hover:text-jm-ink hover:underline"
+                className="inline-flex h-8 items-center rounded-full border border-jm-border bg-white px-3.5 text-[13px] font-medium text-jm-ink-2 transition-colors hover:border-jm-border-accent hover:bg-jm-hover-soft hover:text-jm-ink"
               >
                 Passer
               </button>
