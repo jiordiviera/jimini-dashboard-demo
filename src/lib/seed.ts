@@ -2,7 +2,7 @@ import demoConversation from "@/lib/demo-conversation.json";
 import demoLease from "@/lib/demo-lease.json";
 import type { AnswerVerification, AppState, Conversation, Folder } from "@/lib/types";
 
-export const STATE_VERSION = 3;
+export const STATE_VERSION = 4;
 
 /** Conversation ouverte au premier chargement. */
 export const DEMO_CONVERSATION_ID = "c_demo_bail";
