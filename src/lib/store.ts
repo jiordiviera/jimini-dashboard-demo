@@ -20,6 +20,15 @@ const listeners = new Set<Listener>();
 let state: AppState | null = null;
 const serverState: AppState = createSeedState();
 let persistTimer: ReturnType<typeof setTimeout> | null = null;
+let freshlySeeded = false;
+
+/** Vrai une seule fois si les données de départ viennent d'être créées (premier chargement). */
+export function takeFreshSeed(): boolean {
+  getState();
+  const value = freshlySeeded;
+  freshlySeeded = false;
+  return value;
+}
 
 function isAppState(value: unknown): value is AppState {
   if (!value || typeof value !== "object") return false;
@@ -42,6 +51,7 @@ function load(): AppState {
     // Stockage indisponible ou corrompu : on repart des données de départ.
   }
   const seeded = createSeedState();
+  freshlySeeded = true;
   writeNow(seeded);
   return seeded;
 }
@@ -56,7 +66,7 @@ function writeNow(next: AppState): void {
         ...next,
         conversations: next.conversations.map((c) => ({
           ...c,
-          documents: c.documents.map((d) => ({ ...d, text: "" })),
+          documents: c.documents.map((d) => ({ ...d, text: "", pageTexts: [] })),
         })),
       };
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(light));

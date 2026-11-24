@@ -77,14 +77,17 @@ export function ChatRunnerProvider({ children }: { children: ReactNode }) {
     setStreaming({ conversationId, messageId: assistant.id });
 
     try {
-      await streamChat(
+      const { verification } = await streamChat(
         {
           messages: history,
           mode: conversation.mode,
           sources: conversation.sources,
           documents: conversation.documents
             .filter((d) => d.text.length > 0)
-            .map((d) => ({ name: d.name, text: d.text })),
+            .map((d) => ({
+              name: d.name,
+              pageTexts: d.pageTexts?.length ? d.pageTexts : [d.text],
+            })),
         },
         {
           signal: controller.signal,
@@ -92,6 +95,9 @@ export function ChatRunnerProvider({ children }: { children: ReactNode }) {
             updateMessage(conversationId, assistant.id, { content: text }),
         },
       );
+      if (verification) {
+        updateMessage(conversationId, assistant.id, { verification });
+      }
     } catch (error) {
       const current = getConversation(conversationId)?.messages.find(
         (m) => m.id === assistant.id,

@@ -7,7 +7,7 @@ Règles impératives :
 - Raisonne en droit français. Si une question relève d'un autre droit, signale-le.
 - Ne cite un article de code ou de loi que si tu es certain de sa numérotation et de son contenu. En cas de doute, décris la règle sans donner de numéro et indique qu'il faut vérifier la référence.
 - N'invente jamais de jurisprudence, de numéro de pourvoi, de date de décision, de nom de partie ni de référence de publication. Si tu évoques une tendance jurisprudentielle, présente-la comme telle, sans référence précise inventée.
-- Si des documents sont fournis dans des balises <document>, appuie-toi d'abord sur eux : cite les passages pertinents entre guillemets en indiquant le nom du document, et signale ce qui n'y figure pas.
+- Si des documents sont fournis dans des balises <document>, appuie-toi d'abord sur eux, en suivant les règles de citation ci-dessous, et signale ce qui n'y figure pas.
 - Ne prétends pas avoir consulté des bases de données, Légifrance ou des sources en ligne.
 - Termine chaque réponse par une section « Points à vérifier par l'avocat » listant les éléments à contrôler (références, faits manquants, délais, pièces).`;
 
@@ -18,6 +18,18 @@ export const REFLEXION_INSTRUCTIONS = `Mode Réflexion : mène une analyse appro
 - Propose une conclusion argumentée et des recommandations opérationnelles hiérarchisées.`;
 
 export const RAPIDE_INSTRUCTIONS = `Mode Rapide : va à l'essentiel. Réponse concise et directement exploitable, sans développements superflus.`;
+
+export function citationInstructions(documentCount: number): string {
+  const format =
+    documentCount > 1
+      ? '[docN:p.X "extrait exact"], où N est le numéro (index) du document et X le numéro de page'
+      : '[doc:p.X "extrait exact"], où X est le numéro de page';
+  return `Règles de citation des documents joints (obligatoires) :
+- Chaque affirmation tirée d'un document est suivie de sa source au format ${format}.
+- L'extrait est copié mot pour mot depuis la page indiquée (balise <page number="X">) : mêmes mots, même ordre, sans reformulation, sans correction et sans ellipse. Longueur : 6 à 25 mots.
+- Une citation par extrait ; place-la juste après la phrase qu'elle étaie. N'utilise jamais ce format pour autre chose qu'un extrait réel du document.
+- Les citations sont vérifiées automatiquement : un extrait inexact sera signalé comme introuvable.`;
+}
 
 export const SOURCES_INSTRUCTIONS = `L'utilisateur a activé l'option Sources : termine ta réponse (après les points à vérifier) par une section « Sources » listant les textes de loi et articles de code mobilisés, uniquement ceux dont tu es certain, et les extraits des documents fournis le cas échéant. Si tu n'as aucune source certaine, écris-le.`;
 

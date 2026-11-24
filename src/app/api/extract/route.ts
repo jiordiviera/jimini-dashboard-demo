@@ -13,6 +13,7 @@ const MAX_TEXT_CHARS = 150_000;
 interface ExtractedFile {
   name: string;
   text: string;
+  pageTexts: string[];
   pages: number | null;
   size: number;
   truncated: boolean;
@@ -34,25 +35,40 @@ function clean(text: string): string {
 async function extractFile(file: File): Promise<ExtractedFile> {
   const ext = extensionOf(file.name);
   const buffer = new Uint8Array(await file.arrayBuffer());
-  let text: string;
+  let rawPages: string[];
   let pages: number | null = null;
 
   if (ext === ".pdf") {
     const pdf = await getDocumentProxy(buffer);
-    const result = await extractText(pdf, { mergePages: true });
-    text = result.text;
+    const result = await extractText(pdf, { mergePages: false });
+    rawPages = result.text;
     pages = result.totalPages;
   } else {
-    text = new TextDecoder("utf-8").decode(buffer);
+    rawPages = [new TextDecoder("utf-8").decode(buffer)];
   }
 
-  const cleaned = clean(text);
+  // On garde le découpage par page (pour vérifier les citations « p.X »)
+  // en plafonnant la taille totale.
+  let budget = MAX_TEXT_CHARS;
+  const pageTexts: string[] = [];
+  let truncated = false;
+  for (const page of rawPages.map(clean)) {
+    if (budget <= 0) {
+      truncated = true;
+      break;
+    }
+    pageTexts.push(page.slice(0, budget));
+    if (page.length > budget) truncated = true;
+    budget -= page.length;
+  }
+
   return {
     name: file.name,
-    text: cleaned.slice(0, MAX_TEXT_CHARS),
+    text: pageTexts.join("\n\n"),
+    pageTexts,
     pages,
     size: file.size,
-    truncated: cleaned.length > MAX_TEXT_CHARS,
+    truncated,
   };
 }
 
@@ -96,7 +112,7 @@ export async function POST(req: Request): Promise<Response> {
 
   try {
     const extracted = await Promise.all(files.map(extractFile));
-    const empty = extracted.find((f) => f.text.length === 0);
+    const empty = extracted.find((f) => f.text.trim().length === 0);
     if (empty) {
       return Response.json(
         {

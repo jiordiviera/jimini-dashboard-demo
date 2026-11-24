@@ -1,5 +1,5 @@
-import { MAX_FILES, STREAM_ERROR_MARKER } from "@/lib/chat-protocol";
-import type { ChatDocument, ChatRequestBody } from "@/lib/types";
+import { MAX_FILES, STREAM_ERROR_MARKER, STREAM_META_MARKER } from "@/lib/chat-protocol";
+import type { AnswerVerification, ChatDocument, ChatRequestBody } from "@/lib/types";
 import { uid } from "@/lib/utils";
 
 export class ChatRequestError extends Error {}
@@ -18,7 +18,7 @@ async function readError(res: Response): Promise<string> {
 export async function streamChat(
   body: ChatRequestBody,
   options: { signal: AbortSignal; onText: (fullText: string) => void },
-): Promise<string> {
+): Promise<{ text: string; verification: AnswerVerification | null }> {
   const res = await fetch("/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -31,28 +31,49 @@ export async function streamChat(
 
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
-  let text = "";
+  let raw = "";
+  const visible = () => {
+    const meta = raw.indexOf(STREAM_META_MARKER);
+    return meta === -1 ? raw : raw.slice(0, meta);
+  };
+
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
-    text += decoder.decode(value, { stream: true });
-    const markerIndex = text.indexOf(STREAM_ERROR_MARKER);
+    raw += decoder.decode(value, { stream: true });
+    const markerIndex = raw.indexOf(STREAM_ERROR_MARKER);
     if (markerIndex !== -1) {
-      const partial = text.slice(0, markerIndex);
-      options.onText(partial);
-      throw new ChatRequestError(
-        text.slice(markerIndex + STREAM_ERROR_MARKER.length),
-      );
+      options.onText(raw.slice(0, markerIndex));
+      throw new ChatRequestError(raw.slice(markerIndex + STREAM_ERROR_MARKER.length));
     }
-    options.onText(text);
+    // Ne pas afficher un marqueur en cours de réception.
+    const text = visible();
+    options.onText(text.endsWith("\u0000") ? text.slice(0, -1) : text);
   }
-  text += decoder.decode();
+  raw += decoder.decode();
+
+  const metaIndex = raw.indexOf(STREAM_META_MARKER);
+  const text = metaIndex === -1 ? raw : raw.slice(0, metaIndex);
+  let verification: AnswerVerification | null = null;
+  if (metaIndex !== -1) {
+    try {
+      verification = JSON.parse(raw.slice(metaIndex + STREAM_META_MARKER.length)) as AnswerVerification;
+    } catch {
+      verification = null;
+    }
+  }
   options.onText(text);
-  return text;
+  return { text, verification };
 }
 
 interface ExtractResponse {
-  files?: { name: string; text: string; pages: number | null; size: number }[];
+  files?: {
+    name: string;
+    text: string;
+    pageTexts: string[];
+    pages: number | null;
+    size: number;
+  }[];
   error?: string;
 }
 
@@ -82,7 +103,14 @@ export async function extractDocuments(
       }
       const data = (await res.json()) as ExtractResponse;
       for (const f of data.files ?? []) {
-        documents.push({ id: uid("d"), ...f });
+        documents.push({
+          id: uid("d"),
+          name: f.name,
+          text: f.text,
+          pageTexts: f.pageTexts,
+          pages: f.pages,
+          size: f.size,
+        });
       }
     } catch {
       errors.push(`Échec de l'envoi de ${file.name}.`);

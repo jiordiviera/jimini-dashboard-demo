@@ -3,13 +3,15 @@ import type {
   MessageParam,
   MessageStreamEvent,
 } from "@anthropic-ai/sdk/resources/messages";
+import { analyzeAnswer } from "@/lib/citations";
 import {
+  citationInstructions,
   RAPIDE_INSTRUCTIONS,
   REFLEXION_INSTRUCTIONS,
   SOURCES_INSTRUCTIONS,
   SYSTEM_PROMPT,
 } from "@/lib/prompts";
-import { STREAM_ERROR_MARKER } from "@/lib/chat-protocol";
+import { STREAM_ERROR_MARKER, STREAM_META_MARKER } from "@/lib/chat-protocol";
 import type { ChatRequestBody } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -39,11 +41,12 @@ function parseBody(raw: unknown): ChatRequestBody | null {
   const documents = Array.isArray(body.documents)
     ? body.documents
         .filter(
-          (d): d is { name: string; text: string } =>
+          (d): d is { name: string; pageTexts: string[] } =>
             !!d &&
             typeof d === "object" &&
             typeof (d as { name?: unknown }).name === "string" &&
-            typeof (d as { text?: unknown }).text === "string",
+            Array.isArray((d as { pageTexts?: unknown }).pageTexts) &&
+            (d as { pageTexts: unknown[] }).pageTexts.every((p) => typeof p === "string"),
         )
         .slice(0, 5)
     : [];
@@ -82,11 +85,18 @@ function buildMessages(body: ChatRequestBody): MessageParam[] {
 
   const lastUser = merged[merged.length - 1];
   if (lastUser && lastUser.role === "user" && body.documents.length > 0) {
+    let budget = MAX_DOC_CHARS * body.documents.length;
     const docs = body.documents
-      .map(
-        (d) =>
-          `<document name="${escapeAttr(d.name)}">\n${d.text.slice(0, MAX_DOC_CHARS)}\n</document>`,
-      )
+      .map((d, index) => {
+        const pages = d.pageTexts
+          .map((text, i) => {
+            const slice = text.slice(0, Math.max(0, budget));
+            budget -= slice.length;
+            return `<page number="${i + 1}">\n${slice}\n</page>`;
+          })
+          .join("\n");
+        return `<document index="${index + 1}" name="${escapeAttr(d.name)}" pages="${d.pageTexts.length}">\n${pages}\n</document>`;
+      })
       .join("\n\n");
     lastUser.content = `Documents joints :\n\n${docs}\n\n---\n\n${String(lastUser.content)}`;
   }
@@ -139,6 +149,7 @@ export async function POST(req: Request): Promise<Response> {
   const system = [
     SYSTEM_PROMPT,
     reflexion ? REFLEXION_INSTRUCTIONS : RAPIDE_INSTRUCTIONS,
+    body.documents.length > 0 ? citationInstructions(body.documents.length) : "",
     body.sources ? SOURCES_INSTRUCTIONS : "",
   ]
     .filter(Boolean)
@@ -149,6 +160,9 @@ export async function POST(req: Request): Promise<Response> {
     {
       model: process.env.ANTHROPIC_MODEL || "claude-sonnet-5-5",
       max_tokens: reflexion ? 4000 : 1500,
+      // Pas de réflexion interne : elle consommerait le budget de tokens
+      // avant la réponse ; le mode Réflexion passe par les consignes système.
+      thinking: { type: "between_tools" },
       system,
       messages,
     },
@@ -167,6 +181,8 @@ export async function POST(req: Request): Promise<Response> {
   }
 
   const encoder = new TextEncoder();
+  const documents = body.documents;
+  let fullText = "";
   const readable = new ReadableStream<Uint8Array>({
     async start(controller) {
       const push = (event: MessageStreamEvent) => {
@@ -174,6 +190,7 @@ export async function POST(req: Request): Promise<Response> {
           event.type === "content_block_delta" &&
           event.delta.type === "text_delta"
         ) {
+          fullText += event.delta.text;
           controller.enqueue(encoder.encode(event.delta.text));
         }
       };
@@ -184,6 +201,10 @@ export async function POST(req: Request): Promise<Response> {
           if (next.done) break;
           push(next.value);
         }
+        // Vérification côté serveur : chaque extrait cité existe-t-il vraiment
+        // à la page indiquée ? Quelles références légales sont citées ?
+        const verification = analyzeAnswer(fullText, documents);
+        controller.enqueue(encoder.encode(`${STREAM_META_MARKER}${JSON.stringify(verification)}`));
         controller.close();
       } catch (error) {
         if (req.signal.aborted) {

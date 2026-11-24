@@ -21,9 +21,39 @@ export interface Folder {
 export interface ChatDocument {
   id: string;
   name: string;
+  /** Texte complet (pages jointes). */
   text: string;
+  /** Texte de chaque page (une seule « page » pour TXT, MD et CSV). */
+  pageTexts: string[];
   pages: number | null;
   size: number;
+  /** URL publique du fichier d'origine, quand elle existe (document de démo). */
+  url?: string;
+}
+
+export type CitationStatus = "verified" | "other-page" | "not-found";
+
+export interface CitationCheck {
+  docIndex: number;
+  docName: string | null;
+  page: number;
+  excerpt: string;
+  status: CitationStatus;
+  foundPage: number | null;
+}
+
+export interface LegalRef {
+  key: string;
+  label: string;
+  article: string | null;
+  code: string | null;
+  complete: boolean;
+  url: string;
+}
+
+export interface AnswerVerification {
+  citations: CitationCheck[];
+  legalRefs: LegalRef[];
 }
 
 export interface AttachmentRef {
@@ -38,6 +68,7 @@ export interface ChatMessage {
   attachments?: AttachmentRef[];
   createdAt: number;
   error?: boolean;
+  verification?: AnswerVerification;
 }
 
 export interface Conversation {
@@ -86,5 +117,5 @@ export interface ChatRequestBody {
   messages: { role: "user" | "assistant"; content: string }[];
   mode: ChatMode;
   sources: boolean;
-  documents: { name: string; text: string }[];
+  documents: { name: string; pageTexts: string[] }[];
 }
