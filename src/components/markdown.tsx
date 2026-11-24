@@ -1,8 +1,14 @@
+"use client";
+
+import { useMemo } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { CitationPill } from "@/components/citation-pill";
+import { linkCitations } from "@/lib/citations";
+import type { CitationCheck } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-const components: Components = {
+const baseComponents: Components = {
   h1: ({ children }) => (
     <h1 className="mt-5 mb-2 font-serif text-[22px] font-medium text-jm-ink first:mt-0">
       {children}
@@ -79,11 +85,50 @@ const components: Components = {
   ),
 };
 
-export function Markdown({ content, className }: { content: string; className?: string }) {
+interface MarkdownProps {
+  content: string;
+  className?: string;
+  /** Résultat de la vérification des citations, dans l'ordre d'apparition. */
+  citations?: CitationCheck[] | null;
+  onCitationClick?: (index: number) => void;
+}
+
+export function Markdown({ content, className, citations, onCitationClick }: MarkdownProps) {
+  const components = useMemo<Components>(
+    () => ({
+      ...baseComponents,
+      a: ({ children, href }) => {
+        const match = href?.match(/^#jm-cite-(\d+)$/);
+        if (match) {
+          const index = Number(match[1]);
+          return (
+            <CitationPill
+              citation={citations?.[index]}
+              onOpen={() => onCitationClick?.(index)}
+            />
+          );
+        }
+        return (
+          <a
+            href={href}
+            target="_blank"
+            rel="noreferrer"
+            className="text-jm-blue underline underline-offset-2"
+          >
+            {children}
+          </a>
+        );
+      },
+    }),
+    [citations, onCitationClick],
+  );
+
+  const source = useMemo(() => linkCitations(content), [content]);
+
   return (
     <div className={cn("text-[14.5px] leading-[1.7] break-words text-jm-prose", className)}>
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
-        {content}
+        {source}
       </ReactMarkdown>
     </div>
   );

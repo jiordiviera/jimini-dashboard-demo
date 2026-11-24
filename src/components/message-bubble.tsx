@@ -12,7 +12,8 @@ import { toast } from "sonner";
 import { JiminiLoader } from "@/components/jimini-loader";
 import { JiminiMark } from "@/components/jimini-mark";
 import { Markdown } from "@/components/markdown";
-import type { ChatMessage } from "@/lib/types";
+import { VerificationFooter } from "@/components/verification-footer";
+import type { AnswerVerification, ChatMessage } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 interface MessageBubbleProps {
@@ -20,6 +21,9 @@ interface MessageBubbleProps {
   streaming?: boolean;
   canRegenerate?: boolean;
   onRegenerate?: () => void;
+  verification?: AnswerVerification | null;
+  onOpenCitation?: (index: number) => void;
+  onOpenAttachment?: (name: string) => void;
 }
 
 export function MessageBubble({
@@ -27,6 +31,9 @@ export function MessageBubble({
   streaming = false,
   canRegenerate = false,
   onRegenerate,
+  verification = null,
+  onOpenCitation,
+  onOpenAttachment,
 }: MessageBubbleProps) {
   const [copied, setCopied] = useState(false);
 
@@ -46,16 +53,18 @@ export function MessageBubble({
         {message.attachments && message.attachments.length > 0 && (
           <div className="flex max-w-[85%] flex-wrap justify-end gap-1.5">
             {message.attachments.map((a, i) => (
-              <span
+              <button
+                type="button"
                 key={`${a.name}-${i}`}
-                className="inline-flex max-w-[240px] items-center gap-1.5 rounded-lg border border-jm-border bg-white px-2 py-1 text-[12px] text-jm-ink-3"
+                onClick={() => onOpenAttachment?.(a.name)}
+                className="inline-flex max-w-[240px] items-center gap-1.5 rounded-lg border border-jm-border bg-white px-2 py-1 text-[12px] text-jm-ink-3 transition-colors hover:border-jm-border-accent hover:text-jm-ink"
               >
                 <DocumentTextIcon className="size-3.5 shrink-0 text-jm-rose" />
                 <span className="truncate">{a.name}</span>
                 {a.pages !== null && (
                   <span className="shrink-0 text-jm-faint">· {a.pages} p.</span>
                 )}
-              </span>
+              </button>
             ))}
           </div>
         )}
@@ -69,7 +78,7 @@ export function MessageBubble({
   const empty = message.content.length === 0;
 
   return (
-    <div className="group flex gap-3">
+    <div data-assistant-message className="group flex scroll-mt-4 gap-3">
       <JiminiMark className="mt-0.5" />
       <div className="min-w-0 flex-1">
         {message.error ? (
@@ -83,8 +92,16 @@ export function MessageBubble({
           </div>
         ) : (
           <div className={cn(streaming && "[&>div>*:last-child]:jm-caret")}>
-            <Markdown content={message.content} />
+            <Markdown
+              content={message.content}
+              citations={verification?.citations ?? null}
+              onCitationClick={onOpenCitation}
+            />
           </div>
+        )}
+
+        {!streaming && !message.error && verification && (
+          <VerificationFooter verification={verification} />
         )}
 
         {!streaming && !empty && (
